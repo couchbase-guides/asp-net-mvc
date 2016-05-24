@@ -1,0 +1,98 @@
+---
+tags: [asp.net,.net,c#,mvc]
+projects: []
+---
+:couchbase_version: current
+:toc:
+:project_id: gs-rest-service
+:icons: font
+:source-highlighter: prettify
+
+This guide walks you through the process of creating a "hello world" ASP.NET MVC web application that uses link:http://developer.couchbase.com[Couchbase].
+
+== What you'll build
+
+You'll build a website that will run on your development machine. You will access it through your browser at an address like:
+
+----
+http://localhost:12345/
+----
+
+With this website, you'll be able to perform all the basic CRUD (Create,Read,Update,Delete) operations.
+
+In this demonstration, you'll be interaction with information about people: their name, their address, etc. The Couchbase database will contain one "bucket" that only contains people. Each person document will be represented in JSON:
+
+[source,json]
+----
+{"FirstName":"Matt,"LastName":"Groves"}
+----
+
+== What you'll need
+
+* 15-30 minutes
+* Visual Studio 2015 installed (2013 will probably work too)
+* NuGet (it should be pre-packaged with Visual Studio already)
+* link:http://www.couchbase.com/nosql-databases/downloads[Couchbase Server Community Edition 4.5+] (follow the instructions to install Couchbase)
+
+
+== How to complete this guide
+
+This guide assumes you have some familiarity with the ASP.NET MVC framework. You should understand at least the basics of: Controllers, Views (I'll be using Razor), C#.
+
+I'll be discussing Dependency Injection briefly, but this is not a guide to dependency injection in general.
+
+== Build Setup
+
+You can start File->New
+
+Or start from source code sample on github:
+
+== Code
+
+==== Adding the necessary libraries
+
+Adding Couchbase .NET SDK to project.
+
+Setting up Couchbase with ClusterHelper in Global.asax
+
+Adding StructureMap to project
+
+Setting up Couchbase in StructureMap
+
+==== Data model and data access
+
+Create Person class
+
+Create Person repository.
+
+==== Create CRUD ASP.NET MVC actions:
+
+Read (index)
+
+Create (add, post add)
+
+Update (edit, post edit)
+
+Delete (delete, confirm in JS)
+
+== Run
+
+walk through compile/run
+
+Screenshot of Read in browser
+
+click 'add'
+
+Screenshot of Create
+
+click 'edit'
+
+Screenshot of Update
+
+click 'delete'
+
+Screenshot of Delete
+
+== Summary
+
+Congratulations! You've just developed an ASP.NET MVC application that uses Couchbase.
