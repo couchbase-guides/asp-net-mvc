@@ -43,13 +43,9 @@ I'll be discussing Dependency Injection briefly, but this is not a guide to depe
 
 == Build Setup
 
-You can start from scratch in Visual Studio if you'd like. Go to File->New Project->ASP.NET Web Application. Select the ASP.NET MVC 4.5.2 template. User authentication is not used in this quick start, so click "Change Authentication", select "No Authentication", and click "OK." I'm not going to discuss Azure, so you can also uncheck the "Microsoft Azure" option.
+Get the "starter" source code sample that I've made available in this Github repository via Git. From Visual Studio, File->Open Project/Solution, navigate to the "starter" folder, and select the "Starter.sln" solution file.
 
-Another option is that you can start from the "starter" source code sample that I've made available in this Github repository. Get the source code with Git. From Visual Studio, File->Open Project/Solution, navigate to the "starter" folder, and select the "Starter.sln" solution file.
-
-Note that the "starter" source code is likely to vary from the source code if you take the "from scratch" route. This is because a) I've removed some irrelvant code when creating the starter solution, and/or b) The ASP.NET MVC 4.5.2 template could change. The rest of this quick start will make the assumption that you are using the starter code project.
-
-In either case, you should be able to compile your code. You should also be able to run the website.
+You should be able to compile that project in Visual Studio, and you should also be able to run the website.
 
 == Code
 
@@ -67,6 +63,7 @@ If you prefer the NuGet command line, then open up the Package Manager Console, 
 
 Now let's setup the ASP.NET app to be able to connect to Couchbase. The first thing we need to do is locate the Couchbase Cluster. The best place to do this is in the Global.asax.cs when the application starts. At a minimum, we need to specify one node in the cluster, and give that to the ```ClusterHelper```. This only needs to be done once in ```Application_Start```. When the application ends, it's a good idea to close the ```ClusterHelper``` in order to clean up and dispose of resources that aren't needed.
 
+```
     public class MvcApplication : System.Web.HttpApplication
     {
         protected void Application_Start()
@@ -89,6 +86,7 @@ Now let's setup the ASP.NET app to be able to connect to Couchbase. The first th
             ClusterHelper.Close();
         }
     }
+```
 
 Some notes:
 
@@ -107,6 +105,7 @@ We will come back to StructureMap.MV5 later, after we create some code to model 
 
 In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple Person class. Althought C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
 
+```
     public class Person
     {
         public Guid? Id {get; set; }
@@ -118,11 +117,13 @@ In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO)
             Type = "Person";
         }
     }
+```
 
 Note that I'm creating a property of Type, which will be set to Person. A Couchbase bucket is a heterogenous collection of documents, so this is a convenient way to set Person documents apart. You'll see shortly how that property gets used.
 
 Now let's create a class that will access Couchbase data. There are many data access patterns that you can explore, but let's look a simple repository pattern.
 
+```
     using x;
     using y;
     using z;
@@ -163,6 +164,7 @@ Now let's create a class that will access Couchbase data. There are many data ac
             _bucket.Remove("Person::" + id);
         }
     }
+```
 
 With this repository, we can perform all 4 of the CRUD operations:
 
@@ -198,6 +200,7 @@ Delete will remove the document with the given key.
 
 Now that we have a repository with the basic CRUD elements, we can start to use it with ASP.NET MVC. I'm going to use HomeController. HomeController will need to use an instance of the PersonRespository, so I will make that a parameter of the HomeController constructor.
 
+```
     public class HomeController : Controller
     {
         private readonly PersonRepository _personRepo;
@@ -209,11 +212,13 @@ Now that we have a repository with the basic CRUD elements, we can start to use 
 
         // ... etc ...
     }
+```
 
 Remember when we added StructureMap.MVC5? It adds several files to your project. One of them is DefaultRegistry.cs, which sets up StructureMap to use default conventions.
 
 What we'll need to do with Couchbase, is to modify that registry so that StructureMap can give us an instance of IBucket. An IBucket, then, is used to interact with a Couchbase bucket (get documents, add documents, update documents, as we've already seen). Here's is how to setup an IBucket registration:
 
+```
      public class DefaultRegistry : Registry {
         #region Constructors and Destructors
 
@@ -231,10 +236,11 @@ What we'll need to do with Couchbase, is to modify that registry so that Structu
 
         #endregion
     }
+```
 
 In this example:
 
-- I'm using the ClusterHelper to get a specific bucket (which I called 'hello-couchbase', but you can call whatever you want). Make sure that this bucket exists in Couchbase (you can use 'default' or one of the example buckets if you set one up in [part 1 of this blog series](http://blog.couchbase.com/2016/may/couchbase-with-windows-and-.net---part-1)).
+- I'm using the ClusterHelper to get a specific bucket (which I called 'hello-couchbase', but you can call whatever you want). Make sure that this bucket exists in Couchbase (you can use 'default' or create your own bucket.
 - Putting a password on a bucket is not required, but it's a good idea.
 - The IBucket instance is a singleton, because there is no reason to have multiple instances of it. In fact, disposing an IBucket you get from ClusterHelper is something you should _not_ do, as the ClusterHelper will have to re-create the connection and the IBucket instance.
 
@@ -242,7 +248,7 @@ At this point, your program should compile and run. We still aren't actually usi
 
 *Read action*
 
-I suggest we We need to start with an Index action, that will actually list all the person documents. Since the GetAll method is using N1QL, there is one critical thing we need to do first: create a primary index on the bucket.
+We will start with an Index action, that will actually list all the person documents. Since the GetAll method is using N1QL, there is one critical thing we need to do first: create a primary index on the bucket (go to the Query tab in the Couchbase Console).
 
     CREATE PRIMARY INDEX ON `hello-couchbase`
 
@@ -296,6 +302,7 @@ We certainly can't create all the documents by hand directly in Couchbase, so le
 
 The Save POST action is going to be reused by the Update feature as well. Next, we'll need to create an Edit.cshtml view to display HTML inputs to the user. This should be pretty familiar territory if you've used ASP.NET MVC.
 
+```
 	@model {todo sample namespace}.Models.Person
 
 	@{
@@ -318,7 +325,7 @@ The Save POST action is going to be reused by the Update feature as well. Next, 
 	
 	    <input type="submit" value="Submit" />
 	}
-
+```
 Notice the hidden field. This will always have an empty value when adding a new person. But we'll need it for editing later. You should be able to compile and run the web app. Now you can add a new person with the form. After you add a person, you should be redirected to the index page, and that person should show up on the index page.
 
 *Update (Read single document, post edit)*

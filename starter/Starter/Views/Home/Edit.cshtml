@@ -1,0 +1,22 @@
+﻿@model Starter.Models.Person
+
+@{
+    ViewBag.Title = "Add : Couchbase & ASP.NET Example";
+}
+
+@using (Html.BeginForm("Save", "Home", FormMethod.Post))
+{
+    <input type="hidden" name="Id" value="@Model.Id"/>
+
+    <p>
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name)
+    </p>
+
+    <p>
+        @Html.LabelFor(m => m.Address)
+        @Html.TextBoxFor(m => m.Address)
+    </p>
+
+    <input type="submit" value="Submit" />
+}
