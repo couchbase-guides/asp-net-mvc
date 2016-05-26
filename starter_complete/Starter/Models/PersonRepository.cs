@@ -10,9 +10,9 @@ namespace Starter.Models
     {
         private readonly IBucket _bucket;
 
-        public PersonRepository(IBucket bucket)
+        public PersonRepository()
         {
-            _bucket = bucket;
+            _bucket = ClusterHelper.GetBucket("hello-couchbase");
         }
 
         public List<Person> GetAll()

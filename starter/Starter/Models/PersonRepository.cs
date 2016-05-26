@@ -10,29 +10,29 @@ namespace Starter.Models
     {
         private readonly IBucket _bucket;
 
-        public PersonRepository(IBucket bucket)
+        public PersonRepository()
         {
-            _bucket = bucket;
+            _bucket = ClusterHelper.GetBucket("hello-couchbase");
         }
 
         public List<Person> GetAll()
         {
-            throw new NotImplementedException("GetAll implementation goes here");
+            throw new NotImplementedException("Write code to get all Person documents");
         }
 
         public Person GetPersonByKey(Guid key)
         {
-            throw new NotImplementedException("GetPersonByKey implementation goes here");
+            throw new NotImplementedException("Write code to get a Person document by key");
         }
 
         public void Save(Person person)
         {
-            throw new NotImplementedException("Save implementation goes here");
+            throw new NotImplementedException("Write code to create a new Person or update an existing Person");
         }
 
         public void Delete(Guid id)
         {
-            throw new NotImplementedException("Delete implementation goes here");
+            throw new NotImplementedException("Write code to delete a Person given a key");
         }
     }
 }

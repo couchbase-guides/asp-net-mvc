@@ -8,9 +8,9 @@ namespace Starter.Controllers
     {
         private readonly PersonRepository _personRepo;
 
-        public HomeController(PersonRepository personRepo)
+        public HomeController()
         {
-            _personRepo = personRepo;
+            _personRepo = new PersonRepository();
         }
 
         public ActionResult Index()
