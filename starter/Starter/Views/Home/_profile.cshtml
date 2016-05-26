@@ -1,0 +1,14 @@
+﻿@model KeyValuePair<string, Starter.Models.Person>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 class="panel-title">
+            @Model.Value.FirstName @Model.Value.LastName
+            @Html.ActionLink("[Edit]", "Edit", new {id = Model.Key})
+            @Html.ActionLink("[Delete]", "Delete", new {id = Model.Key}, new { @class="deletePerson"})
+        </h2>
+    </div>
+    <div class="panel-body">
+        Username: @Model.Key
+    </div>
+</div>

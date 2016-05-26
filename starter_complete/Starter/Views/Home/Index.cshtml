@@ -1,4 +1,4 @@
-﻿@model List<Starter.Models.Person>
+﻿@model Dictionary<string, Starter.Models.Person>
 
 @{
     ViewBag.Title = "Home : Couchbase & ASP.NET Example";
@@ -11,7 +11,7 @@
 
 @foreach (var item in Model)
 {
-    @Html.Partial("_person", item)
+    @Html.Partial("_profile", item)
 }
 
 @section Scripts {

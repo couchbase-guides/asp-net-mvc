@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Couchbase;
 using Couchbase.Core;
 using Couchbase.N1QL;
@@ -15,38 +16,33 @@ namespace Starter.Models
             _bucket = ClusterHelper.GetBucket("hello-couchbase");
         }
 
-        public List<Person> GetAll()
+        public Dictionary<string, Person> GetAll()
         {
-            var request = QueryRequest.Create("SELECT hc.* FROM `hello-couchbase` as hc WHERE type='Person';");
+            var request = QueryRequest.Create("SELECT META().id AS `key`, TOOBJECT(hc) as `value` FROM `hello-couchbase` as hc WHERE type='Person';");
             request.ScanConsistency(ScanConsistency.RequestPlus);
-            var response = _bucket.Query<Person>(request);
-            return response.Rows;
+            var response = _bucket.Query<KeyValuePair<string, Person>>(request);
+            return response.Rows.ToDictionary(x => x.Key, x => x.Value);
         }
 
-        public Person GetPersonByKey(Guid key)
+        public KeyValuePair<string, Person> GetPersonByKey(string key)
         {
-            var person = _bucket.Get<Person>("Person::" + key).Value;
-            return person;
+            var person = _bucket.Get<Person>(key).Value;
+            return new KeyValuePair<string, Person>(key, person);
         }
 
-        public void Save(Person person)
+        public void Save(KeyValuePair<string, Person> model)
         {
-            // if there is no ID, then assume this is a "new" person
-            // and assign an ID
-            if (string.IsNullOrEmpty(person.Id))
-                person.Id = Guid.NewGuid().ToString();
-
             var doc = new Document<Person>
             {
-                Id = "Person::" + person.Id,
-                Content = person
+                Id = model.Key,
+                Content = model.Value
             };
             _bucket.Upsert(doc);
         }
 
-        public void Delete(Guid id)
+        public void Delete(string key)
         {
-            _bucket.Remove("Person::" + id);
+            _bucket.Remove(key);
         }
     }
 }

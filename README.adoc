@@ -6,7 +6,9 @@
 :source-highlighter: prettify
 :tags: asp.net,.net,c#,mvc
 
-This guide walks you through the process of creating a "hello world" ASP.NET MVC web application that uses link:http://developer.couchbase.com[Couchbase].
+= Getting started with Couchbase on ASP.NET MVC
+
+With this guid you'll create a "hello world" ASP.NET MVC web application that uses link:http://developer.couchbase.com[Couchbase].
 
 == What you'll build
 
@@ -43,7 +45,7 @@ This guide assumes you have some familiarity with the ASP.NET MVC framework. You
 
 == Build Setup
 
-Get the "starter" source code sample that I've made available. Open git bash, clone the repo using `git clone` command. From Visual Studio, File->Open Project/Solution, navigate to the "starter" folder, and select the ``Starter.sln`` solution file.
+Get the "starter" source code sample that I've made available. Open git bash, clone the repo using `git clone` command. From Visual Studio, File->Open Project/Solution, navigate to the "starter" folder, and select the `Starter.sln` solution file.
 
 You should be able to compile that project in Visual Studio, and you should also be able to run the website. When you do so before completing this guide, you'll get some exceptions which contain hints on what code you need to write.
 
@@ -57,120 +59,49 @@ The first thing we'll need to do is add the Couchbase .NET client. You can do th
 
 image::nugetui_001.png[NuGet Screenshot]
 
-Now let's setup the ASP.NET app to be able to connect to Couchbase. The first thing we need to do is locate the Couchbase Cluster. The best place to do this is in the ``Global.asax.cs`` when the application starts. At a minimum, we need to specify one node in the cluster, and give that to the ``ClusterHelper``. This only needs to be done once in ``Application_Start``. When the application ends, it's a good idea to close the ``ClusterHelper`` in order to clean up and dispose of resources that aren't needed.
+Now let's setup the ASP.NET app to be able to connect to Couchbase. The first thing we need to do is locate the Couchbase Cluster. The best place to do this is in the `Global.asax.cs` when the application starts. At a minimum, we need to specify one node in the cluster, and give that to the `ClusterHelper`. This only needs to be done once in `Application_Start`. When the application ends, it's a good idea to close the `ClusterHelper` in order to clean up and dispose of resources that aren't needed.
 
-```
-    public class MvcApplication : System.Web.HttpApplication
-    {
-        protected void Application_Start()
-        {
-            AreaRegistration.RegisterAllAreas();
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
+`/Starter/Global.asax.cs`
+[source,c#]
+----
+include::starter_complete/Starter/Global.asax.cs[]
+----
 
-            var config = new ClientConfiguration();
-            config.Servers = new List<Uri>
-            {
-                new Uri("http://localhost:8091")
-            };
-            config.UseSsl = false;
-            ClusterHelper.Initialize(config);
-        }
-
-        protected void Application_End()
-        {
-            ClusterHelper.Close();
-        }
-    }
-```
-
-Once the ``ClusterHelper`` is initialized, we can use it to access buckets.
+Once the `ClusterHelper` is initialized, we can use it to access buckets.
 
 ==== Data model and data access
 
-In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple ``Person`` class. Althought C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
+In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple `Person` class. Althought C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
 
-```
-    public class Person
-    {
-        public Person() { Type = "Person"; }
+`/Starter/Models/Person.cs`
+[source,c#]
+----
+include::starter_complete/Starter/Models/Person.cs[]
+----
 
-        public string Id { get; set; }
-        public string Type { get; set; }
-        public string Name { get; set; } 
-        public string Address { get; set; }
-    }
-```
+Note that I'm creating a string property of `Type`, which will be set to "Person". A Couchbase bucket is a heterogenous collection of documents, so this is a convenient way to set Person documents apart. You'll see shortly how that property gets used.
 
-Note that I'm creating a string property of ``Type``, which will be set to "Person". A Couchbase bucket is a heterogenous collection of documents, so this is a convenient way to set Person documents apart. You'll see shortly how that property gets used.
+Now let's create a class that will access Couchbase data. Locate and open `PersonRespository.cs`. There are many data access patterns that you can explore, but let's look a simple repository pattern.
 
-Now let's create a class that will access Couchbase data. Locate and open ``PersonRespository.cs``. There are many data access patterns that you can explore, but let's look a simple repository pattern.
+`/Starter/Models/PersonRepository.cs`
+[source,c#]
+----
+include::starter_complete/Starter/Models/PersonRepository.cs[]
+----
 
-```
-    using System;
-    using System.Collections.Generic;
-    using Couchbase;
-    using Couchbase.Core;
-    using Couchbase.N1QL;
+For this guide, I'm going to skip talking about `ScanConsistency`, because it would add complexity to this guide. There are trade-offs to consider when using different ScanConsistency options. However, RequestPlus is the easiest to use for a simple guide like this one.
 
-    public class PersonRepository
-    {
-        private readonly IBucket _bucket;
-    
-        public PersonRepository()
-        {
-            _bucket = ClusterHelper.GetBucket("hello-couchbase");
-        }
-
-        public List<Person> GetAll()
-        {
-            var request = QueryRequest.Create("SELECT hc.* FROM `hello-couchbase` as hc WHERE type='Person';");
-            request.ScanConsistency(ScanConsistency.RequestPlus);
-            var response = _bucket.Query<Person>(request);
-            return response.Rows;
-        }
-
-        public Person GetPersonByKey(Guid key)
-        {
-            var person = _bucket.Get<Person>("Person::" + key).Value;
-            return person;
-        }
-
-        public void Save(Person person)
-        {
-            // if there is no ID, then assume this is a "new" person
-            // and assign an ID
-            if (string.IsNullOrEmpty(person.Id))
-                person.Id = Guid.NewGuid().ToString();
-
-            var doc = new Document<Person>
-            {
-                Id = "Person::" + person.Id,
-                Content = person
-            };
-            _bucket.Upsert(doc);
-        }
-
-        public void Delete(Guid id)
-        {
-            _bucket.Remove("Person::" + id);
-        }
-    }
-```
-
-For this guide, I'm going to skip talking about ``ScanConsistency``, because it would add complexity to this guide. There are trade-offs to consider when using different ScanConsistency options. However, RequestPlus is the easiest to use for a simple guide like this one.
-
-Also, under normal circumstances, we'd prefer the ``IBucket`` to be injected with an IoC container, but it is omitted from this guide for the sake of simplicity.
+Also, under normal circumstances, we'd prefer the `IBucket` to be injected with an IoC container, but it is omitted from this guide for the sake of simplicity.
 
 With this repository, we can perform all of the CRUD operations. Let's discuss each method individually:
 
 *GetPersonByKey*
 
-Each document in a Couchbase bucket has a unique key. Think of a bucket as a giant ``Dictionary<string,string>`` (that's a gross oversimplification, but it's a starting point). This method will return a document given a key. This is an extremely fast operation in Couchbase, and it's always good to work with keys when possible.
+Each document in a Couchbase bucket has a unique key. Think of a bucket as a giant `Dictionary<string,string>` (that's a gross oversimplification, but it's a starting point). This method will return a document given a key. This is an extremely fast operation in Couchbase, and it's always good to work with keys when possible.
 
 *GetAll*
 
-This method uses the Couchbase N1QL (Non-First Normal Form Query Language). N1QL is a superset of SQL, and allows you to construct very powerful queries. In this case, we're simply getting all Person documents with no limits or ordering. But paging, ordering, filtering, and many other powerful things can be done with an N1QL query.
+This method uses the Couchbase N1QL (Non-First Normal Form Query Language). N1QL is a superset of SQL, and allows you to construct very powerful queries. In this case, we're simply getting all Person documents with no limits or ordering. I'm formatting the results in such a way that the results of the query will map nicely into a `KeyValuePair` object (and ultimately a `Dictionary`). But paging, ordering, filtering, and many other powerful things can be done with an N1QL query. If this seems a little awkward to you, then I urge you to check out the link:/https://github.com/couchbaselabs/Linq2Couchbase[Linq2Couchbase] library (not officially supported by Couchbase, yet, but an amazing tool).
 
 *Save*
 
@@ -186,11 +117,11 @@ Delete will remove the document with the given key.
 
 ==== CRUD ASP.NET MVC actions:
 
-The sample code has an MVC controller ``HomeController`` already set up with some Actions an Views. The actions use the repository you created and pass along objects to the views.
+The sample code has an MVC controller `HomeController` already set up with some Actions an Views. The actions use the repository you created and pass along objects to the views.
 
-You can view these by starting at ``HomeController.cs``.
+You can view these by starting at `HomeController.cs`.
 
-Once you've implemented the repository and added the setup code to ``Global.asax.cs``, you should be ready to compile and run.
+Once you've implemented the repository and added the setup code to `Global.asax.cs`, you should be ready to compile and run.
 
 == Run
 

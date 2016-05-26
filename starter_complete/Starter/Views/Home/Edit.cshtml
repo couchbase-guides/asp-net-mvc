@@ -1,4 +1,4 @@
-﻿@model Starter.Models.Person
+﻿@model KeyValuePair<string, Starter.Models.Person>
 
 @{
     ViewBag.Title = "Add : Couchbase & ASP.NET Example";
@@ -6,16 +6,29 @@
 
 @using (Html.BeginForm("Save", "Home", FormMethod.Post))
 {
-    <input type="hidden" name="Id" value="@Model.Id"/>
+
+    if (!string.IsNullOrEmpty(Model.Key))
+    {
+        <input type="hidden" name="Key" value="@Model.Key"/>
+        <p>Username: <strong>@Model.Key</strong>
+        </p>
+    }
+    else
+    {
+        <p>
+            @Html.LabelFor(m => m.Key,"Username")
+            @Html.TextBoxFor(m => m.Key)
+        </p>
+    }
 
     <p>
-        @Html.LabelFor(m => m.Name)
-        @Html.TextBoxFor(m => m.Name)
+        @Html.LabelFor(m => m.Value.FirstName, "First Name")
+        @Html.TextBoxFor(m => m.Value.FirstName)
     </p>
 
     <p>
-        @Html.LabelFor(m => m.Address)
-        @Html.TextBoxFor(m => m.Address)
+        @Html.LabelFor(m => m.Value.LastName, "Last Name")
+        @Html.TextBoxFor(m => m.Value.LastName)
     </p>
 
     <input type="submit" value="Submit" />

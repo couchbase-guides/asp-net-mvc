@@ -15,12 +15,12 @@ namespace Starter
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            throw new NotImplementedException("Write code to set up ClientConfiguration and initialize the ClusterHelper");
+            throw new NotImplementedException("Initialize ClusterHelper with ClientConfiguration");
         }
 
         protected void Application_End()
         {
-            throw new NotImplementedException("Write code to close out the ClusterHelper");
+            throw new NotImplementedException("Clean up ClusterHelper with Close");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Couchbase;
 using Couchbase.Core;
 using Couchbase.N1QL;
@@ -15,24 +16,24 @@ namespace Starter.Models
             _bucket = ClusterHelper.GetBucket("hello-couchbase");
         }
 
-        public List<Person> GetAll()
+        public Dictionary<string, Person> GetAll()
         {
-            throw new NotImplementedException("Write code to get all Person documents");
+            throw new NotImplementedException("Implement GetAll with a N1QL query");
         }
 
-        public Person GetPersonByKey(Guid key)
+        public KeyValuePair<string, Person> GetPersonByKey(string key)
         {
-            throw new NotImplementedException("Write code to get a Person document by key");
+            throw new NotImplementedException("Implement GetPersonByKey with bucket Get");
         }
 
-        public void Save(Person person)
+        public void Save(KeyValuePair<string, Person> model)
         {
-            throw new NotImplementedException("Write code to create a new Person or update an existing Person");
+            throw new NotImplementedException("Implement Save with bucket Upsert");
         }
 
-        public void Delete(Guid id)
+        public void Delete(string key)
         {
-            throw new NotImplementedException("Write code to delete a Person given a key");
+            throw new NotImplementedException("Implement Delete with bucket Remove");
         }
     }
 }
