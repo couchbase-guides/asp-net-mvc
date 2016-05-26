@@ -20,7 +20,7 @@ http://localhost:1655/
 
 With this website, you'll be able to perform all the basic CRUD (Create,Read,Update,Delete) operations.
 
-In this demonstration, you'll be interacting with information a Person, which consists of "name" and "address". The Couchbase database will contain one "bucket" that contains people documents. Each person document will be represented in JSON:
+In this demonstration, you'll be interacting with information a Profile, which consists of "name" and "address". The Couchbase database will contain one "bucket" that contains people documents. Each document will be represented in JSON:
 
 [source,json]
 ----
@@ -72,7 +72,7 @@ Once the `ClusterHelper` is initialized, we can use it to access buckets.
 
 ==== Data model and data access
 
-In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple `Person` class. Althought C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
+In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple `Profile` class. Althought C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
 
 `/Starter/Models/Profile.cs`
 [source,c#]
@@ -80,9 +80,9 @@ In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO)
 include::starter_complete/Starter/Models/Profile.cs[]
 ----
 
-Note that I'm creating a string property of `Type`, which will be set to "Person". A Couchbase bucket is a heterogenous collection of documents, so this is a convenient way to set Person documents apart. You'll see shortly how that property gets used.
+Note that I'm creating a string property of `Type`, which will be set to "Profile". A Couchbase bucket is a heterogenous collection of documents, so this is a convenient way to set Profile documents apart. You'll see shortly how that property gets used.
 
-Now let's create a class that will access Couchbase data. Locate and open `PersonRespository.cs`. There are many data access patterns that you can explore, but let's look a simple repository pattern.
+Now let's create a class that will access Couchbase data. Locate and open `ProfileRespository.cs`. There are many data access patterns that you can explore, but let's look a simple repository pattern.
 
 `/Starter/Models/ProfileRepository.cs`
 [source,c#]
@@ -96,13 +96,13 @@ Also, under normal circumstances, we'd prefer the `IBucket` to be injected with 
 
 With this repository, we can perform all of the CRUD operations. Let's discuss each method individually:
 
-*GetPersonByKey*
+*GetProfileByKey*
 
 Each document in a Couchbase bucket has a unique key. Think of a bucket as a giant `Dictionary<string,string>` (that's a gross oversimplification, but it's a starting point). This method will return a document given a key. This is an extremely fast operation in Couchbase, and it's always good to work with keys when possible.
 
 *GetAll*
 
-This method uses the Couchbase N1QL (Non-First Normal Form Query Language). N1QL is a superset of SQL, and allows you to construct very powerful queries. In this case, we're simply getting all Person documents with no limits or ordering. I'm formatting the results in such a way that the results of the query will map nicely into a `KeyValuePair` object (and ultimately a `Dictionary`). But paging, ordering, filtering, and many other powerful things can be done with an N1QL query. If this seems a little awkward to you, then I urge you to check out the link:/https://github.com/couchbaselabs/Linq2Couchbase[Linq2Couchbase] library (not officially supported by Couchbase, yet, but an amazing tool).
+This method uses the Couchbase N1QL (Non-First Normal Form Query Language). N1QL is a superset of SQL, and allows you to construct very powerful queries. In this case, we're simply getting all Profile documents with no limits or ordering. I'm formatting the results in such a way that the results of the query will map nicely into a `KeyValuePair` object (and ultimately a `Dictionary`). But paging, ordering, filtering, and many other powerful things can be done with an N1QL query. If this seems a little awkward to you, then I urge you to check out the link:/https://github.com/couchbaselabs/Linq2Couchbase[Linq2Couchbase] library (not officially supported by Couchbase, yet, but an amazing tool).
 
 *Save*
 
@@ -110,7 +110,7 @@ Save is using "upsert", which operates on the document key.
 
 If a document with the key already exists, it will update the value of the document (this is the UP in UPsert).
 
-If a document with the key doesn't exist, a new document will be created with that key. The only restriction on keys is that they must be unique within a bucket. I'm choosing to format them as "Person::{GUID}".
+If a document with the key doesn't exist, a new document will be created with that key. The only restriction on keys is that they must be unique within a bucket. I'm choosing to make the username the key.
 
 *Delete*
 
@@ -126,25 +126,25 @@ Once you've implemented the repository and added the setup code to `Global.asax.
 
 == Run
 
-After compiling and running the site for the first time, you should be taken to the Home Index page, which will show you a message that it didn't find any Person documents.
+After compiling and running the site for the first time, you should be taken to the Home Index page, which will show you a message that it didn't find any Profile documents.
 
 image::run001.png[Initial view in browser]
 
-Click the "Add Person" link in the navigation toolbar at the top, and you should be taken to a plain-looking form.
+Click the "Add Profile" link in the navigation toolbar at the top, and you should be taken to a plain-looking form.
 
 image::run002.png[Create form]
 
-After saving, you should be redirected to the home index view, and you'll see the new person in the list. Feel free to do this multiple times to make the list grow.
+After saving, you should be redirected to the home index view, and you'll see the new profile in the list. Feel free to do this multiple times to make the list grow.
 
-image::run003.png[List of person documents in home index view]
+image::run003.png[List of profile documents in home index view]
 
-Now, pick one to edit and click the [Edit] link. You should see a form to edit a person. Make some changes and click Submit.
+Now, pick one to edit and click the [Edit] link. You should see a form to edit a profile. Make some changes and click Submit.
 
-image::run004.png[Edit a person]
+image::run004.png[Edit a profile]
 
 We've covered Read, Create, Update, so all that's left is delete. Click a [Delete] link.
 
-image::run005.png[Delete a person]
+image::run005.png[Delete a profile]
 
 == Summary
 
