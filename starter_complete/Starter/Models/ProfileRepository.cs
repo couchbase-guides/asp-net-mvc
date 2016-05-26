@@ -7,32 +7,32 @@ using Couchbase.N1QL;
 
 namespace Starter.Models
 {
-    public class PersonRepository
+    public class ProfileRepository
     {
         private readonly IBucket _bucket;
 
-        public PersonRepository()
+        public ProfileRepository()
         {
             _bucket = ClusterHelper.GetBucket("hello-couchbase");
         }
 
-        public Dictionary<string, Person> GetAll()
+        public Dictionary<string, Profile> GetAll()
         {
-            var request = QueryRequest.Create("SELECT META().id AS `key`, TOOBJECT(hc) as `value` FROM `hello-couchbase` as hc WHERE type='Person';");
+            var request = QueryRequest.Create("SELECT META().id AS `key`, TOOBJECT(hc) as `value` FROM `hello-couchbase` as hc WHERE type='Profile';");
             request.ScanConsistency(ScanConsistency.RequestPlus);
-            var response = _bucket.Query<KeyValuePair<string, Person>>(request);
+            var response = _bucket.Query<KeyValuePair<string, Profile>>(request);
             return response.Rows.ToDictionary(x => x.Key, x => x.Value);
         }
 
-        public KeyValuePair<string, Person> GetPersonByKey(string key)
+        public KeyValuePair<string, Profile> GetProfileByKey(string key)
         {
-            var person = _bucket.Get<Person>(key).Value;
-            return new KeyValuePair<string, Person>(key, person);
+            var profile = _bucket.Get<Profile>(key).Value;
+            return new KeyValuePair<string, Profile>(key, profile);
         }
 
-        public void Save(KeyValuePair<string, Person> model)
+        public void Save(KeyValuePair<string, Profile> model)
         {
-            var doc = new Document<Person>
+            var doc = new Document<Profile>
             {
                 Id = model.Key,
                 Content = model.Value

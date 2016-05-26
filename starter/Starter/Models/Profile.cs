@@ -1,8 +1,8 @@
 ﻿namespace Starter.Models
 {
-    public class Person
+    public class Profile
     {
-        public Person() { Type = "Person"; }
+        public Profile() { Type = "Profile"; }
 
         public string Type { get; set; }
         public string FirstName { get; set; } 

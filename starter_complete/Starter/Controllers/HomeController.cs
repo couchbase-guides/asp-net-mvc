@@ -7,40 +7,40 @@ namespace Starter.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly PersonRepository _personRepo;
+        private readonly ProfileRepository _profileRepo;
 
         public HomeController()
         {
-            _personRepo = new PersonRepository();
+            _profileRepo = new ProfileRepository();
         }
 
         public ActionResult Index()
         {
-            var list = _personRepo.GetAll();
+            var list = _profileRepo.GetAll();
             return View(list);
         }
 
         public ActionResult Add()
         {
-            return View("Edit", new KeyValuePair<string, Person>("", new Person()));
+            return View("Edit", new KeyValuePair<string, Profile>("", new Profile()));
         }
 
         [HttpPost]
-        public ActionResult Save(string key, Person value)
+        public ActionResult Save(string key, Profile value)
         {
-            _personRepo.Save(new KeyValuePair<string, Person>(key, value));
+            _profileRepo.Save(new KeyValuePair<string, Profile>(key, value));
             return RedirectToAction("Index");
         }
 
         public ActionResult Edit(string id)
         {
-            var person = _personRepo.GetPersonByKey(id);
-            return View("Edit", person);
+            var profile = _profileRepo.GetProfileByKey(id);
+            return View("Edit", profile);
         }
 
         public ActionResult Delete(string id)
         {
-            _personRepo.Delete(id);
+            _profileRepo.Delete(id);
             return RedirectToAction("Index");
         }
     }

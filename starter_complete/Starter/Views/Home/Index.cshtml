@@ -1,4 +1,4 @@
-﻿@model Dictionary<string, Starter.Models.Person>
+﻿@model Dictionary<string, Starter.Models.Profile>
 
 @{
     ViewBag.Title = "Home : Couchbase & ASP.NET Example";
@@ -17,7 +17,7 @@
 @section Scripts {
     <script type="text/javascript">
         $(function () {
-            $(".deletePerson").click(function(e) {
+            $(".deleteProfile").click(function(e) {
                 if (confirm("Are you sure you want to delete?")) {
                     return true;
                 }

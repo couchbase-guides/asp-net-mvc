@@ -8,7 +8,7 @@
 
 = Getting started with Couchbase on ASP.NET MVC
 
-With this guid you'll create a "hello world" ASP.NET MVC web application that uses link:http://developer.couchbase.com[Couchbase].
+With this guide you'll create a "hello world" ASP.NET MVC web application that uses link:http://developer.couchbase.com[Couchbase].
 
 == What you'll build
 
@@ -25,12 +25,13 @@ In this demonstration, you'll be interacting with information a Person, which co
 [source,json]
 ----
 {
-  "id": "3973ed2d-c76d-41e4-b136-b8ff987bedb4",
-  "type": "Person",
-  "name": "Matt",
-  "address": "Columbus, Ohio"
+    "firstName": "Matt",
+    "lastName": "Groves",
+    "type": "Profile"
 }
 ----
+
+And each document will have a key that is the username of the profile.
 
 == What you'll need
 
@@ -73,20 +74,20 @@ Once the `ClusterHelper` is initialized, we can use it to access buckets.
 
 In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple `Person` class. Althought C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
 
-`/Starter/Models/Person.cs`
+`/Starter/Models/Profile.cs`
 [source,c#]
 ----
-include::starter_complete/Starter/Models/Person.cs[]
+include::starter_complete/Starter/Models/Profile.cs[]
 ----
 
 Note that I'm creating a string property of `Type`, which will be set to "Person". A Couchbase bucket is a heterogenous collection of documents, so this is a convenient way to set Person documents apart. You'll see shortly how that property gets used.
 
 Now let's create a class that will access Couchbase data. Locate and open `PersonRespository.cs`. There are many data access patterns that you can explore, but let's look a simple repository pattern.
 
-`/Starter/Models/PersonRepository.cs`
+`/Starter/Models/ProfileRepository.cs`
 [source,c#]
 ----
-include::starter_complete/Starter/Models/PersonRepository.cs[]
+include::starter_complete/Starter/Models/ProfileRepository.cs[]
 ----
 
 For this guide, I'm going to skip talking about `ScanConsistency`, because it would add complexity to this guide. There are trade-offs to consider when using different ScanConsistency options. However, RequestPlus is the easiest to use for a simple guide like this one.

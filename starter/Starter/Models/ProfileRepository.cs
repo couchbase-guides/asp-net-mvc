@@ -7,26 +7,26 @@ using Couchbase.N1QL;
 
 namespace Starter.Models
 {
-    public class PersonRepository
+    public class ProfileRepository
     {
         private readonly IBucket _bucket;
 
-        public PersonRepository()
+        public ProfileRepository()
         {
             _bucket = ClusterHelper.GetBucket("hello-couchbase");
         }
 
-        public Dictionary<string, Person> GetAll()
+        public Dictionary<string, Profile> GetAll()
         {
             throw new NotImplementedException("Implement GetAll with a N1QL query");
         }
 
-        public KeyValuePair<string, Person> GetPersonByKey(string key)
+        public KeyValuePair<string, Profile> GetProfileByKey(string key)
         {
-            throw new NotImplementedException("Implement GetPersonByKey with bucket Get");
+            throw new NotImplementedException("Implement GetProfileByKey with bucket Get");
         }
 
-        public void Save(KeyValuePair<string, Person> model)
+        public void Save(KeyValuePair<string, Profile> model)
         {
             throw new NotImplementedException("Implement Save with bucket Upsert");
         }
