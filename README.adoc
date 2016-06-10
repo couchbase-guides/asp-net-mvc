@@ -20,7 +20,7 @@ http://localhost:1655/
 
 With this website, you'll be able to perform all the basic CRUD (Create,Read,Update,Delete) operations.
 
-In this demonstration, you'll be interacting with information a Profile, which consists of "name" and "address". The Couchbase database will contain one "bucket" that contains people documents. Each document will be represented in JSON:
+In this demonstration, you'll be interacting with Profiles, which consist of "first name" and "last name". The Couchbase database will contain one "bucket" that contains people documents. Each document will be represented in JSON:
 
 [source,json]
 ----
@@ -72,7 +72,7 @@ Once the `ClusterHelper` is initialized, we can use it to access buckets.
 
 ==== Data model and data access
 
-In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple `Profile` class. Althought C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
+In C#, you can model a Couchbase document by using a Plain Old CLR Object (POCO). Let's model a very simple `Profile` class. Although C# and Couchbase can certainly handle more complexity, the goal of this guide is to get you up and running. We will explore more complex data models in other guides.
 
 `/Starter/Models/Profile.cs`
 [source,c#]
@@ -102,7 +102,7 @@ Each document in a Couchbase bucket has a unique key. Think of a bucket as a gia
 
 *GetAll*
 
-This method uses the Couchbase N1QL (Non-First Normal Form Query Language). N1QL is a superset of SQL, and allows you to construct very powerful queries. In this case, we're simply getting all Profile documents with no limits or ordering. I'm formatting the results in such a way that the results of the query will map nicely into a `KeyValuePair` object (and ultimately a `Dictionary`). But paging, ordering, filtering, and many other powerful things can be done with an N1QL query. If this seems a little awkward to you, then I urge you to check out the link:/https://github.com/couchbaselabs/Linq2Couchbase[Linq2Couchbase] library (not officially supported by Couchbase, yet, but an amazing tool).
+This method uses the Couchbase N1QL (Non-First Normal Form Query Language). N1QL is a superset of SQL, and allows you to construct very powerful queries. In this case, we're simply getting all Profile documents with no limits or ordering. I'm formatting the results in such a way that the results of the query will map nicely into a `KeyValuePair` object (and ultimately a `Dictionary`). But paging, ordering, filtering, and many other powerful things can be done with a N1QL query. If this seems a little awkward to you, then I urge you to check out the link:/https://github.com/couchbaselabs/Linq2Couchbase[Linq2Couchbase] library (not officially supported by Couchbase, yet, but an amazing tool).
 
 *Save*
 
@@ -118,7 +118,7 @@ Delete will remove the document with the given key.
 
 ==== CRUD ASP.NET MVC actions:
 
-The sample code has an MVC controller `HomeController` already set up with some Actions an Views. The actions use the repository you created and pass along objects to the views.
+The sample code has an MVC controller `HomeController` already set up with some Actions and Views. The actions use the repository you created and pass along objects to the views. Views. The actions use the repository you created and pass along objects to the views.
 
 You can view these by starting at `HomeController.cs`.
 
