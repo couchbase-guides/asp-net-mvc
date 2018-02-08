@@ -38,7 +38,7 @@ And each document will have a key that is the username of the profile.
 * 15-30 minutes
 * Visual Studio 2015 installed (2013 will probably work too)
 * NuGet (it should be pre-packaged with Visual Studio already)
-* link:http://www.couchbase.com/nosql-databases/downloads[Couchbase Server 4.5+] (follow the instructions to install Couchbase and create a bucket - this guide assumes you will have it running locally)
+* link:http://www.couchbase.com/nosql-databases/downloads[Couchbase Server 4.x] (follow the instructions to install Couchbase and create a bucket - this guide assumes you will have it running locally). If you want to use Couchbase Server 5.x, check out the Couchbase Server 5.x with ASP.NET WebAPI Starter Kit.
 
 == How to complete this guide
 
